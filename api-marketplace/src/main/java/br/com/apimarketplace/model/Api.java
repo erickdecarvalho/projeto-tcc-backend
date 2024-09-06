@@ -21,21 +21,30 @@ public class Api {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "category_id")
+    private String categoryId;
+
     @Column(name = "name")
     private String name;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "provider_id")
-    private String providerId; // modificar quando a entidade Providers for criada
-
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "category_id")
-    private String categoryId;
+    @Column(name = "provider_id")
+    private String providerId; // modificar quando a entidade Providers for criada
 
     private List<String> endpoints;
+
+    public Api(UUID id, String categoryId, String name, String description,  Double price, String providerId) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.providerId = providerId;
+    }
 }
 
