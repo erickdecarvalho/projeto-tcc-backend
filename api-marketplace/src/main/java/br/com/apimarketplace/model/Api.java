@@ -21,8 +21,9 @@ public class Api {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "category_id")
-    private String categoryId;
+    @ManyToOne
+    @JoinColumn(name = "api_category_id")
+    private ApiCategory apiCategory;
 
     @Column(name = "name")
     private String name;
@@ -38,9 +39,9 @@ public class Api {
 
     private List<String> endpoints;
 
-    public Api(UUID id, String categoryId, String name, String description,  Double price, String providerId) {
+    public Api(UUID id, ApiCategory apiCategory, String name, String description,  Double price, String providerId) {
         this.id = id;
-        this.categoryId = categoryId;
+        this.apiCategory = apiCategory;
         this.name = name;
         this.description = description;
         this.price = price;

@@ -1,8 +1,11 @@
 package br.com.apimarketplace.controller;
 
+import br.com.apimarketplace.dto.ApiResponseDto;
+import br.com.apimarketplace.dto.CreateApiCategory;
 import br.com.apimarketplace.dto.CreateApiDto;
 import br.com.apimarketplace.dto.UpdateApiDto;
 import br.com.apimarketplace.model.Api;
+import br.com.apimarketplace.service.ApiCategoryService;
 import br.com.apimarketplace.service.ApiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +18,11 @@ import java.util.List;
 public class ApiController {
 
     private ApiService apiService;
+    private ApiCategoryService apiCategoryService;
 
-    public ApiController(ApiService apiService) {
+    public ApiController(ApiService apiService, ApiCategoryService apiCategoryService) {
         this.apiService = apiService;
+        this.apiCategoryService = apiCategoryService;
     }
 
     @PostMapping
@@ -27,7 +32,7 @@ public class ApiController {
     }
 
     @GetMapping("/{apiId}")
-    public ResponseEntity<Api> getApiById(@PathVariable("apiId") String userId) {
+    public ResponseEntity<ApiResponseDto> getApiById(@PathVariable("apiId") String userId) {
         var api = apiService.getApiById(userId);
 
         if (api.isPresent()) {
@@ -38,8 +43,8 @@ public class ApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Api>> listApis() {
-        var apis = apiService.listApis();
+    public ResponseEntity<List<ApiResponseDto>> listApis() {
+        var apis = apiService.listAllApis();
 
         return ResponseEntity.ok(apis);
     }
@@ -54,5 +59,11 @@ public class ApiController {
     public ResponseEntity<Void> deleteApi(@PathVariable("apiId") String id) {
         apiService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/categorias")
+    public ResponseEntity<Api> createApiCategory(@RequestBody CreateApiCategory createApiCategory) {
+        var apiCategoryId = apiCategoryService.createCategory(createApiCategory);
+        return ResponseEntity.created(URI.create("/apis/categorias" + apiCategoryId.toString())).build();
     }
 }
