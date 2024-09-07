@@ -1,5 +1,6 @@
 package br.com.apimarketplace.service;
 
+import br.com.apimarketplace.dto.CreateApiDto;
 import br.com.apimarketplace.model.Api;
 import br.com.apimarketplace.repository.ApiRepository;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,16 @@ public class ApiService {
         this.apiRepository = apiRepository;
     }
 
-    public void createApi() {
+    public UUID createApi(CreateApiDto createApiDto) {
         var api = new Api(UUID.randomUUID(),
-                "2",
-                "API Football",
-                "Uma api sobre futebol",
-                29.9,
-                "1"
+                createApiDto.categoryId(),
+                createApiDto.name(),
+                createApiDto.description(),
+                createApiDto.price(),
+                createApiDto.providerId()
                 );
 
-        apiRepository.save(api);
+        var savedApi = apiRepository.save(api);
+        return savedApi.getId();
     }
 }
