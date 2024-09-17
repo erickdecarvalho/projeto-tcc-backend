@@ -32,8 +32,8 @@ public class ApiController {
     }
 
     @GetMapping("/{apiId}")
-    public ResponseEntity<ApiResponseDto> getApiById(@PathVariable("apiId") String userId) {
-        var api = apiService.getApiById(userId);
+    public ResponseEntity<ApiResponseDto> getApiById(@PathVariable("apiId") String apiId) {
+        var api = apiService.getApiById(apiId);
 
         if (api.isPresent()) {
             return ResponseEntity.ok(api.get());
