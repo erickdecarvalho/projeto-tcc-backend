@@ -5,6 +5,7 @@ import br.com.apimarketplace.dto.ProviderResponseDto;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class ProviderService {
         this.providerRepository = providerRepository;
     }
 
+    @Transactional
     public UUID createProvider(CreateProviderDto createProviderDto) {
 
         var provider = new Provider(UUID.randomUUID(),

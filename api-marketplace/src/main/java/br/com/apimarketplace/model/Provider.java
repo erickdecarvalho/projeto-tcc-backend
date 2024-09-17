@@ -1,13 +1,12 @@
 package br.com.apimarketplace.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -20,6 +19,9 @@ public class Provider extends User{
 
     @Column(name = "organization_name")
     private String organizationName;
+
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
+    private List<Api> apis;
 
     public Provider(UUID id, String username, String password, String email, String organizationName) {
         super(id, username, password, email);

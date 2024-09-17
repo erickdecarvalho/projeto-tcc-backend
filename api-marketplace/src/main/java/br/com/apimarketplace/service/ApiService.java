@@ -7,6 +7,7 @@ import br.com.apimarketplace.dto.UpdateApiDto;
 import br.com.apimarketplace.model.Api;
 import br.com.apimarketplace.repository.ApiCategoryRepository;
 import br.com.apimarketplace.repository.ApiRepository;
+import br.com.apimarketplace.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,21 +20,24 @@ public class ApiService {
 
     private ApiRepository apiRepository;
     private ApiCategoryRepository apiCategoryRepository;
+    private ProviderRepository providerRepository;
 
-    public ApiService(ApiRepository apiRepository, ApiCategoryRepository apiCategoryRepository) {
+    public ApiService(ApiRepository apiRepository, ApiCategoryRepository apiCategoryRepository, ProviderRepository providerRepository) {
         this.apiRepository = apiRepository;
         this.apiCategoryRepository = apiCategoryRepository;
+        this.providerRepository = providerRepository;
     }
 
     public UUID createApi(CreateApiDto createApiDto) {
         var apiCategory = apiCategoryRepository.getReferenceById(createApiDto.categoryId());
+        var providerId = providerRepository.getReferenceById(createApiDto.providerId());
 
         var api = new Api(UUID.randomUUID(),
                 apiCategory,
                 createApiDto.name(),
                 createApiDto.description(),
                 createApiDto.price(),
-                createApiDto.providerId()
+                providerId
                 );
 
         var savedApi = apiRepository.save(api);
@@ -43,14 +47,14 @@ public class ApiService {
     public Optional<ApiResponseDto> getApiById(String apiId) {
         return apiRepository.findById(UUID.fromString(apiId))
                 .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getName(), api.getName(),
-                        api.getDescription(), api.getPrice())
+                        api.getDescription(), api.getPrice(), api.getProvider().getId())
                 );
     }
 
     public List<ApiResponseDto> listAllApis() {
         return apiRepository.findAll().stream()
                 .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getName(), api.getName(),
-                        api.getDescription(), api.getPrice()))
+                        api.getDescription(), api.getPrice(), api.getProvider().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -58,7 +62,7 @@ public class ApiService {
         var id = UUID.fromString(userId);
 
         var apiCategory = apiCategoryRepository.getReferenceById(updateApiDto.categoryId());
-
+        var providerId = providerRepository.getReferenceById(updateApiDto.providerId());
         var apiEntity = apiRepository.findById(id);
 
         if (apiEntity.isPresent()) {
@@ -80,9 +84,9 @@ public class ApiService {
                 api.setPrice(updateApiDto.price());
             }
 
-            if (updateApiDto.providerId() != null) {
-                api.setProviderId(updateApiDto.providerId());
-            }
+//            if (updateApiDto.providerId() != null) {
+//                api.setProviderId(providerId);
+//            }
 
             apiRepository.save(api);
         }

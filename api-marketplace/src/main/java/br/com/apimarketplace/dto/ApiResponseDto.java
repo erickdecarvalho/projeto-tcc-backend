@@ -7,5 +7,6 @@ public record ApiResponseDto(
         String category,
         String name,
         String description,
-        Double price)
+        Double price,
+        UUID providerId)
 {}

@@ -1,4 +1,6 @@
 package br.com.apimarketplace.dto;
 
-public record UpdateApiDto(Integer categoryId, String name, String description, Double price, String providerId) {
+import java.util.UUID;
+
+public record UpdateApiDto(Integer categoryId, String name, String description, Double price, UUID providerId) {
 }
