@@ -34,18 +34,20 @@ public class Api {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "provider_id")
-    private String providerId; // modificar quando a entidade Providers for criada
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
 
     private List<String> endpoints;
 
-    public Api(UUID id, ApiCategory apiCategory, String name, String description,  Double price, String providerId) {
+    public Api(UUID id, ApiCategory apiCategory, String name, String description, Double price, Provider provider) {
         this.id = id;
         this.apiCategory = apiCategory;
         this.name = name;
         this.description = description;
         this.price = price;
-        this.providerId = providerId;
+        this.provider = provider;
     }
+
 }
 
