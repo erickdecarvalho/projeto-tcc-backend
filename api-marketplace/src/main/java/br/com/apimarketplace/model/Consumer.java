@@ -1,5 +1,6 @@
 package br.com.apimarketplace.model;
 
+import br.com.apimarketplace.dto.ConsumerDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,17 @@ public class Consumer extends User {
 
     public Consumer(UUID id, String username, String password, String email) {
         super(id, username, password, email);
+    }
+
+    public ConsumerDto getDto() {
+        ConsumerDto consumerDto = new ConsumerDto();
+        consumerDto.setId(getId());
+        consumerDto.setUsername(getUsername());
+        consumerDto.setPassword(getPassword());
+        consumerDto.setEmail(getEmail());
+
+        // consumerDto.setRole(getRole());
+
+        return consumerDto;
     }
 }
