@@ -3,8 +3,10 @@ package br.com.apimarketplace.service;
 import br.com.apimarketplace.dto.ConsumerResponseDto;
 import br.com.apimarketplace.dto.CreateConsumerDto;
 import br.com.apimarketplace.dto.ProviderResponseDto;
+import br.com.apimarketplace.enums.UserRole;
 import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.repository.ConsumerRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +29,9 @@ public class ConsumerService {
 
         var consumer = new Consumer(UUID.randomUUID(),
                 createConsumerDto.username(),
-                createConsumerDto.password(),
-                createConsumerDto.email()
+                new BCryptPasswordEncoder().encode(createConsumerDto.password()),
+                createConsumerDto.email(),
+                UserRole.CONSUMER
         );
 
         var savedProvider = consumerRepository.save(consumer);

@@ -1,5 +1,6 @@
 package br.com.apimarketplace.model;
 
+import br.com.apimarketplace.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +24,8 @@ public class Provider extends User{
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
     private List<Api> apis;
 
-    public Provider(UUID id, String username, String password, String email, String organizationName) {
-        super(id, username, password, email);
+    public Provider(UUID id, String username, String password, String email, UserRole role, String organizationName) {
+        super(id, username, password, email, role);
         this.organizationName = organizationName;
     }
 }
