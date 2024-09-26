@@ -2,6 +2,7 @@ package br.com.apimarketplace.service;
 
 import br.com.apimarketplace.dto.CreateProviderDto;
 import br.com.apimarketplace.dto.ProviderResponseDto;
+import br.com.apimarketplace.enums.UserRole;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class ProviderService {
                 createProviderDto.username(),
                 createProviderDto.password(),
                 createProviderDto.email(),
+                UserRole.PROVIDER,
                 createProviderDto.organizationName()
         );
 

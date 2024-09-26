@@ -1,5 +1,6 @@
 package br.com.apimarketplace.model;
 
+import br.com.apimarketplace.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,4 +30,7 @@ public abstract class User {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "role")
+    private UserRole role;
 }
