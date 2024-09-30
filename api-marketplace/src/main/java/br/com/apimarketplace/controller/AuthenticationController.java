@@ -1,8 +1,6 @@
 package br.com.apimarketplace.controller;
 
-import br.com.apimarketplace.dto.AuthenticationRequest;
-import br.com.apimarketplace.dto.ConsumerDto;
-import br.com.apimarketplace.dto.SignupConsumerRequestDto;
+import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.model.User;
 import br.com.apimarketplace.repository.UserRepository;
 import br.com.apimarketplace.service.AuthService;
@@ -55,6 +53,13 @@ public class AuthenticationController {
         ConsumerDto createdConsumer = authService.signupConsumer(signupConsumerRequestDto);
 
         return new ResponseEntity<>(createdConsumer, HttpStatus.OK);
+    }
+
+    @PostMapping("/provedores/registrar")
+    public ResponseEntity<?> signupProvider(@RequestBody SignupProviderRequestDto signupProviderRequestDto) {
+        ProviderDto createdProvider = authService.signupProvider(signupProviderRequestDto);
+
+        return new ResponseEntity<>(createdProvider, HttpStatus.OK);
     }
 
     @PostMapping({"/authenticate"})

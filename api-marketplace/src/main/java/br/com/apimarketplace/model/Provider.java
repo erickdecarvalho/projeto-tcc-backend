@@ -1,5 +1,6 @@
 package br.com.apimarketplace.model;
 
+import br.com.apimarketplace.dto.ProviderDto;
 import br.com.apimarketplace.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,16 @@ public class Provider extends User{
     public Provider(UUID id, String username, String password, String email, UserRole role, String organizationName) {
         super(id, username, password, email, role);
         this.organizationName = organizationName;
+    }
+
+    public ProviderDto getDto() {
+        ProviderDto providerDto = new ProviderDto();
+        providerDto.setId(getId());
+        providerDto.setUsername(getUsername());
+        providerDto.setPassword(getPassword());
+        providerDto.setEmail(getEmail());
+        providerDto.setRole(getRole());
+
+        return providerDto;
     }
 }
