@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-@Tag(name = "API Controller", description = "Operações relacionadas às APIs")
+@Tag(name = "API Controller", description = "Realated API Controller")
 @Validated
 @RestController
 @RequestMapping("/apis")
