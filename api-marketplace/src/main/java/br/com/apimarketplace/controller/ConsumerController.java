@@ -5,8 +5,11 @@ import br.com.apimarketplace.dto.CreateConsumerDto;
 import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.service.ConsumerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "Consumer Controller", description = "Realated Consumer Controller")
+@Tag(name = "Consumer Controller", description = "Related Consumer Controller")
 @RestController
 @RequestMapping("/consumidores")
 public class ConsumerController {
@@ -25,37 +28,58 @@ public class ConsumerController {
         this.consumerService = consumerService;
     }
 
-    @PostMapping
-    @Operation(summary = "Create a user as consumer", description = "A consumer create user")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Create a user as consumer", description = "A consumer creates a user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "201", description = "Consumer successfully created",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"Consumer created successfully\", \"consumerId\": \"12345\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PostMapping
     public ResponseEntity<Consumer> createConsumer(@RequestBody CreateConsumerDto createConsumerDto) {
         var consumerId = consumerService.createConsumer(createConsumerDto);
         return ResponseEntity.created(URI.create("/consumidores/" + consumerId.toString())).build();
     }
 
-    @GetMapping("/{consumerId}")
-    @Operation(summary = "Search consumer by Id", description = "Return specific details about consumer")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Search consumer by Id", description = "Return specific details about a consumer")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Sucess"),
-            @ApiResponse(responseCode = "404", description = "Not Found"),
-            @ApiResponse(responseCode = "400", description = "Invalid id consumer"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Consumer found",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"id\": \"12345\", \"username\": \"consumer_1\", \"email\": \"consumer_1@example.com\"}"))),
+            @ApiResponse(responseCode = "404", description = "Consumer not found",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Consumer not found\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid consumer ID",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid consumer ID format\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @GetMapping("/{consumerId}")
     public ResponseEntity<ConsumerResponseDto> getConsumerById(@PathVariable("consumerId") String consumerId) {
         var consumer = consumerService.getConsumerById(consumerId);
         return consumer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping
-    @Operation(summary = "Search consumer", description = "Return specific details about consumer")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "List all consumers", description = "Return a list of all consumers")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Sucess"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Consumers list retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "[{\"id\": \"12345\", \"username\": \"consumer_1\", \"email\": \"consumer_1@example.com\"}, {\"id\": \"67890\", \"username\": \"consumer_2\", \"email\": \"consumer_2@example.com\"}]"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @GetMapping
     public ResponseEntity<List<ConsumerResponseDto>> listConsumers() {
         var consumers = consumerService.listAllConsumers();
         return ResponseEntity.ok(consumers);

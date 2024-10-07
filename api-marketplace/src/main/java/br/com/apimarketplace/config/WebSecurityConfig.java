@@ -28,7 +28,8 @@ public class WebSecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                 .requestMatchers("/authenticate", "/consumidores/registrar", "/provedores/registrar").permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .and()
