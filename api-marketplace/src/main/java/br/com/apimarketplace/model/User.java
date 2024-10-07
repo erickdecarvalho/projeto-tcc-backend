@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -32,5 +34,7 @@ public abstract class User {
     private String email;
 
     @Column(name = "role")
-    private UserRole role;
+    private List<UserRole> role;
+
+
 }

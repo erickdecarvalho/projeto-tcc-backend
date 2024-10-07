@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -25,7 +26,7 @@ public class Provider extends User{
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
     private List<Api> apis;
 
-    public Provider(UUID id, String username, String password, String email, UserRole role, String organizationName) {
+    public Provider(UUID id, String username, String password, String email, List<UserRole> role, String organizationName) {
         super(id, username, password, email, role);
         this.organizationName = organizationName;
     }

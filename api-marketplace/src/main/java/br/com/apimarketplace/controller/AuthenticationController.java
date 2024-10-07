@@ -63,6 +63,9 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "409", description = "Conflict email register",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Conflict email register\"}"))),
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
@@ -83,6 +86,9 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "409", description = "Conflict email register",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Conflict email register\"}"))),
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))

@@ -8,6 +8,7 @@ import br.com.apimarketplace.repository.ProviderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,11 +26,16 @@ public class ProviderService {
     @Transactional
     public UUID createProvider(CreateProviderDto createProviderDto) {
 
+        List<UserRole> userRoleList = new ArrayList<>();
+        userRoleList.add(UserRole.POST);
+        userRoleList.add(UserRole.DELETE);
+        userRoleList.add(UserRole.GET);
+
         var provider = new Provider(UUID.randomUUID(),
                 createProviderDto.username(),
                 createProviderDto.password(),
                 createProviderDto.email(),
-                UserRole.PROVIDER,
+                userRoleList,
                 createProviderDto.organizationName()
         );
 

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class ApiController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('PROVIDER')")
     @Operation(summary = "Create a new API", description = "A provider can create a new API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "API successfully created",
@@ -82,6 +84,7 @@ public class ApiController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('CONSUMER')")
     @Operation(summary = "List all APIs", description = "A provider can list all APIs")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",

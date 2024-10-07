@@ -10,9 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,12 +24,14 @@ public class ConsumerService {
 
     @Transactional
     public UUID createConsumer(CreateConsumerDto createConsumerDto) {
+        List<UserRole> userRoleList  = new ArrayList<>();
+        userRoleList.add(UserRole.GET);
 
         var consumer = new Consumer(UUID.randomUUID(),
                 createConsumerDto.username(),
                 new BCryptPasswordEncoder().encode(createConsumerDto.password()),
                 createConsumerDto.email(),
-                UserRole.CONSUMER
+                userRoleList
         );
 
         var savedProvider = consumerRepository.save(consumer);
