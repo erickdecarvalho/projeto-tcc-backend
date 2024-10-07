@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D62516554468576D5A71347437"; // Chave de 256 bits
+    @Value("${Secret.key}")
+    private String SECRET;
 
     private String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
@@ -30,6 +32,9 @@ public class JwtUtil {
     }
 
     private Key getSignKey() {
+        if (SECRET== null || SECRET.isEmpty()){
+            throw new IllegalArgumentException("Incorrect config of Secret key");
+        }
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
