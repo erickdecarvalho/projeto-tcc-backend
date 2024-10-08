@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 @Service
 public class ApiService {
 
-    private ApiRepository apiRepository;
-    private ApiCategoryRepository apiCategoryRepository;
-    private ProviderRepository providerRepository;
+    private final ApiRepository apiRepository;
+    private final ApiCategoryRepository apiCategoryRepository;
+    private final ProviderRepository providerRepository;
 
     public ApiService(ApiRepository apiRepository, ApiCategoryRepository apiCategoryRepository, ProviderRepository providerRepository) {
         this.apiRepository = apiRepository;

@@ -126,7 +126,7 @@ public class AuthenticationController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.email());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        final String jwt = jwtUtil.generateToken(userDetails);
         User user = userRepository.findFirstByEmail(authenticationRequest.email());
 
         Map<String, Object> responseBody = new HashMap<>();

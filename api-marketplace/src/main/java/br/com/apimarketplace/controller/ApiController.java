@@ -40,7 +40,7 @@ public class ApiController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('PROVIDER')")
+    @PreAuthorize("hasRole('ROLE_POST')")
     @Operation(summary = "Create a new API", description = "A provider can create a new API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "API successfully created",
@@ -77,6 +77,7 @@ public class ApiController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PreAuthorize("hasRole('ROLE_GET')")
     @GetMapping("/{apiId}")
     public ResponseEntity<ApiResponseDto> getApiById(@PathVariable("apiId") @NotBlank String apiId) {
         var api = apiService.getApiById(apiId);
@@ -84,7 +85,6 @@ public class ApiController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('CONSUMER')")
     @Operation(summary = "List all APIs", description = "A provider can list all APIs")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
@@ -95,6 +95,7 @@ public class ApiController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PreAuthorize("hasRole('ROLE_GET')")
     @GetMapping
     public ResponseEntity<List<ApiResponseDto>> listApis() {
         var apis = apiService.listAllApis();
@@ -115,6 +116,7 @@ public class ApiController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PreAuthorize("hasRole('ROLE_POST')")
     @PutMapping("/{apiId}")
     public ResponseEntity<Void> updateApi(@PathVariable("apiId") String id, @RequestBody @Valid UpdateApiDto updateApiDto) {
         apiService.updateApiById(id, updateApiDto);
@@ -135,6 +137,7 @@ public class ApiController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PreAuthorize("hasRole('ROLE_DELETE')")
     @DeleteMapping("/{apiId}")
     public ResponseEntity<Void> deleteApi(@PathVariable("apiId") @NotBlank String id) {
         apiService.deleteById(id);
@@ -154,6 +157,7 @@ public class ApiController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
+    @PreAuthorize("hasRole('ROLE_POST')")
     @PostMapping("/categorias")
     public ResponseEntity<Api> createApiCategory(@RequestBody @Valid CreateApiCategory createApiCategory) {
         var apiCategoryId = apiCategoryService.createCategory(createApiCategory);
