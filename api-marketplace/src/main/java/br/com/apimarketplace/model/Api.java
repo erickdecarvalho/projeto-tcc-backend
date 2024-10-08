@@ -1,5 +1,6 @@
 package br.com.apimarketplace.model;
 
+import br.com.apimarketplace.dto.ApiDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,5 +50,15 @@ public class Api {
         this.provider = provider;
     }
 
+    public ApiDto getApiDto() {
+        ApiDto apiDto = new ApiDto();
+        apiDto.setId(id);
+        apiDto.setCategoryId(apiCategory.getId());
+        apiDto.setName(name);
+        apiDto.setDescription(description);
+        apiDto.setProviderId(provider.getId());
+
+        return apiDto;
+    }
 }
 
