@@ -1,8 +1,6 @@
 package br.com.apimarketplace.service;
 
-import br.com.apimarketplace.dto.CreateApiDto;
-import br.com.apimarketplace.dto.CreateProviderDto;
-import br.com.apimarketplace.dto.ProviderResponseDto;
+import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.enums.UserRole;
 import br.com.apimarketplace.model.Api;
 import br.com.apimarketplace.model.Provider;
@@ -74,5 +72,22 @@ public class ProviderService {
         }
 
         return false;
+    }
+
+    @Transactional
+    public List<ApiDto> getAllApis(UUID providerId) {
+        List<Api> apis = apiRepository.findAllByProviderId(providerId);
+        System.out.println(apis);
+        return apis.stream().map(Api::getApiDto).collect(Collectors.toList());
+    }
+
+    public ApiDto getApiById(UUID apiId) {
+        Optional<Api> optionalApi = apiRepository.findById(apiId);
+        System.out.println(optionalApi);
+        if(optionalApi.isPresent()) {
+            return optionalApi.get().getApiDto();
+        }
+
+        return null;
     }
 }

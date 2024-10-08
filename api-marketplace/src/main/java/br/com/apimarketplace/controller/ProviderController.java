@@ -1,5 +1,6 @@
 package br.com.apimarketplace.controller;
 
+import br.com.apimarketplace.dto.ApiDto;
 import br.com.apimarketplace.dto.CreateApiDto;
 import br.com.apimarketplace.dto.CreateProviderDto;
 import br.com.apimarketplace.dto.ProviderResponseDto;
@@ -54,6 +55,23 @@ public class ProviderController {
         if (success) {
             return ResponseEntity.status(HttpStatus.OK).build();
         } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/apis/{providerId}")
+    public ResponseEntity<?> getAllApisByUserId(@PathVariable UUID providerId) {
+        List<ApiDto> apis = providerService.getAllApis(providerId);
+        return ResponseEntity.ok(apis);
+    }
+
+    @GetMapping("/api/{apiId}")
+    public ResponseEntity<?> getApiById(@PathVariable UUID apiId) {
+        ApiDto apiDto = providerService.getApiById(apiId);
+        if (apiDto != null) {
+            return ResponseEntity.ok(apiDto);
+        }
+        else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

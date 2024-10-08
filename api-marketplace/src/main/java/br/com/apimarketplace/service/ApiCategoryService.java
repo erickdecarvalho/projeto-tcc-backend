@@ -14,7 +14,7 @@ public class ApiCategoryService {
         this.apiCategoryRepository = apiCategoryRepository;
     }
 
-    public Integer createCategory(CreateApiCategory createApiCategory) {
+    public Long createCategory(CreateApiCategory createApiCategory) {
         var entity = new ApiCategory(createApiCategory.name());
 
         var categorySaved = apiCategoryRepository.save(entity);
