@@ -1,14 +1,18 @@
 package br.com.apimarketplace.controller;
 
+import br.com.apimarketplace.dto.CreateApiDto;
 import br.com.apimarketplace.dto.CreateProviderDto;
 import br.com.apimarketplace.dto.ProviderResponseDto;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.service.ProviderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/provedores")
@@ -42,5 +46,15 @@ public class ProviderController {
         var providers = providerService.listAllProviders();
 
         return ResponseEntity.ok(providers);
+    }
+
+    @PostMapping("/api/{providerId}")
+    public ResponseEntity<?> postApi(@PathVariable UUID providerId, @RequestBody CreateApiDto createApiDto) throws IOException {
+        boolean success = providerService.postApi(providerId, createApiDto);
+        if (success) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
