@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record ApiResponseDto(
         UUID id,
-        String category,
+        Long category,
         String name,
         String description,
         Double price,

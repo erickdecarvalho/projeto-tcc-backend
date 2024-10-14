@@ -46,14 +46,14 @@ public class ApiService {
 
     public Optional<ApiResponseDto> getApiById(String apiId) {
         return apiRepository.findById(UUID.fromString(apiId))
-                .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getName(), api.getName(),
+                .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getId(), api.getName(),
                         api.getDescription(), api.getPrice(), api.getProvider().getId())
                 );
     }
 
     public List<ApiResponseDto> listAllApis() {
         return apiRepository.findAll().stream()
-                .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getName(), api.getName(),
+                .map(api -> new ApiResponseDto(api.getId(), api.getApiCategory().getId(), api.getName(),
                         api.getDescription(), api.getPrice(), api.getProvider().getId()))
                 .collect(Collectors.toList());
     }
