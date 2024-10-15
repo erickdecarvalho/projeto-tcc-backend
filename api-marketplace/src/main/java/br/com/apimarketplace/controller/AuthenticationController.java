@@ -6,6 +6,11 @@ import br.com.apimarketplace.repository.UserRepository;
 import br.com.apimarketplace.service.AuthService;
 import br.com.apimarketplace.service.jwt.UserDetailsServiceImpl;
 import br.com.apimarketplace.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class AuthenticationController {
@@ -48,6 +55,21 @@ public class AuthenticationController {
 
     public static final String HEADER_STRING = "Authorization";
 
+    @Operation(summary = "Consumer SignUp", description = "A consumer register")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Consumer successfully registered",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"Consumer registered successfully\", \"consumerId\": \"12345\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "409", description = "Conflict email register",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Conflict email register\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
     @PostMapping("/consumidores/registrar")
     public ResponseEntity<?> signupConsumer(@RequestBody SignupConsumerRequestDto signupConsumerRequestDto) {
         ConsumerDto createdConsumer = authService.signupConsumer(signupConsumerRequestDto);
@@ -55,6 +77,21 @@ public class AuthenticationController {
         return new ResponseEntity<>(createdConsumer, HttpStatus.OK);
     }
 
+    @Operation(summary = "Provider SignUp", description = "A provider register")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Provider successfully registered",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"Provider registered successfully\", \"providerId\": \"12345\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "409", description = "Conflict email register",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Conflict email register\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
     @PostMapping("/provedores/registrar")
     public ResponseEntity<?> signupProvider(@RequestBody SignupProviderRequestDto signupProviderRequestDto) {
         ProviderDto createdProvider = authService.signupProvider(signupProviderRequestDto);
@@ -62,33 +99,43 @@ public class AuthenticationController {
         return new ResponseEntity<>(createdProvider, HttpStatus.OK);
     }
 
+    @Operation(summary = "Authenticate email and password", description = "Email and password authentication method")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Authenticated successfully",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"userId\": \"12345\", \"role\": \"CONSUMER\", \"token\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid email or password\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
     @PostMapping({"/authenticate"})
-    public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest,
-                                          HttpServletResponse response) throws IOException, JSONException {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws IOException, JSONException {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.email(),
                     authenticationRequest.password()
             ));
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("E-mail ou senha incorretos");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail ou senha incorretos");
+        }catch (Exception e ){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor");
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.email());
 
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        final String jwt = jwtUtil.generateToken(userDetails);
         User user = userRepository.findFirstByEmail(authenticationRequest.email());
 
-        response.getWriter().write(new JSONObject()
-                .put("userId", user.getId())
-                .put("role", user.getRole())
-                .toString()
-        );
+        Map<String,Object> response = new HashMap<>();
 
-        response.addHeader("Access-Control-Expose-Headers", "Authorization");
-        response.addHeader("Access-Control-Allow-Headers", "Authorization," +
-                " X-PINGOTHER, Origin, X-Request-With, Content-Type, Accept, X-Custom-Header");
+        response.put("userId",user.getId());
+        response.put("role",user.getRole());
+        response.put("token","Bearer "+jwt);
 
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX+jwt);
+        return ResponseEntity.ok(response);
     }
 }

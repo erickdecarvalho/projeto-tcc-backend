@@ -1,6 +1,9 @@
 package br.com.apimarketplace.enums;
 
 public enum UserRole {
-    CONSUMER,
-    PROVIDER
+    CONSUMER("CONSUMER"),
+    PROVIDER("PROVIDER");
+
+    UserRole(String userRole) {
+    }
 }

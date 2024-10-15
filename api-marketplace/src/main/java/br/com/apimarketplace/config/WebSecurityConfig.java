@@ -27,11 +27,12 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/authenticate", "/consumidores/registrar").permitAll()
-                .requestMatchers("/authenticate", "/provedores/registrar").permitAll()
+                .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                .requestMatchers("/authenticate", "/consumidores/registrar","/provedores/registrar").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .authorizeHttpRequests().requestMatchers("/api/**")
-                .authenticated().and()
+                .headers()
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -41,6 +42,7 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+
         return config.getAuthenticationManager();
     }
 
