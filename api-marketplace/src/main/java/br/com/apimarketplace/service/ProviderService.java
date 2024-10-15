@@ -3,6 +3,7 @@ package br.com.apimarketplace.service;
 import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.enums.UserRole;
 import br.com.apimarketplace.model.Api;
+import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.repository.ApiCategoryRepository;
 import br.com.apimarketplace.repository.ApiRepository;
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class ProviderService {
 
-    private ProviderRepository providerRepository;
-    private ApiRepository apiRepository;
-    private ApiCategoryRepository apiCategoryRepository;
+    private final ProviderRepository providerRepository;
+    private final ApiRepository apiRepository;
+    private final ApiCategoryRepository apiCategoryRepository;
 
     public ProviderService(ProviderRepository providerRepository, ApiRepository apiRepository, ApiCategoryRepository apiCategoryRepository) {
         this.providerRepository = providerRepository;
@@ -30,18 +31,22 @@ public class ProviderService {
     }
 
     @Transactional
-    public UUID createProvider(CreateProviderDto createProviderDto) {
+    public UUID updateProvider(UpdateProviderDto updateProviderDto) {
+        Optional<Provider> providerOptional = providerRepository.findById(updateProviderDto.providerId());
+        if (providerOptional.isEmpty()){
+            throw new RuntimeException("Provider not found by id "+ updateProviderDto.providerId());
+        }
 
-        var provider = new Provider(UUID.randomUUID(),
-                createProviderDto.username(),
-                createProviderDto.password(),
-                createProviderDto.email(),
-                UserRole.PROVIDER,
-                createProviderDto.organizationName()
-        );
+        Provider provider = providerOptional.get();
 
-        var savedProvider = providerRepository.save(provider);
-        return savedProvider.getId();
+        if (!provider.getUsername().equals(updateProviderDto.username())){
+            provider.setUsername(updateProviderDto.username());
+        }
+        if (!provider.getEmail().equals(updateProviderDto.email())) {
+            provider.setEmail(updateProviderDto.email());
+        }
+
+        return providerRepository.save(provider).getId();
     }
 
     public Optional<ProviderResponseDto> getProviderById(String providerId) {

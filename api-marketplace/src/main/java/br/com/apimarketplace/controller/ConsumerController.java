@@ -1,7 +1,7 @@
 package br.com.apimarketplace.controller;
 
 import br.com.apimarketplace.dto.ConsumerResponseDto;
-import br.com.apimarketplace.dto.CreateConsumerDto;
+import br.com.apimarketplace.dto.UpdateConsumerDto;
 import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.service.ConsumerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +29,7 @@ public class ConsumerController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('CONSUMER')")
-    @Operation(summary = "Create a user as consumer", description = "A consumer creates a user")
+    @Operation(summary = "Update a user as consumer", description = "A consumer update ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Consumer successfully created",
                     content = @Content(mediaType = "application/json",
@@ -42,10 +42,10 @@ public class ConsumerController {
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
     @PostMapping
-    public ResponseEntity<Consumer> createConsumer(@RequestBody CreateConsumerDto createConsumerDto) {
-        var consumerId = consumerService.createConsumer(createConsumerDto);
+    public ResponseEntity<Consumer> updateConsumer(@RequestBody UpdateConsumerDto updateConsumerDto) {
+        var consumerId = consumerService.updateConsumer(updateConsumerDto);
         return ResponseEntity.created(URI.create("/consumidores/" + consumerId.toString())).build();
-    }/*VERIFICAR*/
+    }
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('CONSUMER')")

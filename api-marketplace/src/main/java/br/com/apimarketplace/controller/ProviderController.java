@@ -2,7 +2,7 @@ package br.com.apimarketplace.controller;
 
 import br.com.apimarketplace.dto.ApiDto;
 import br.com.apimarketplace.dto.CreateApiDto;
-import br.com.apimarketplace.dto.CreateProviderDto;
+import br.com.apimarketplace.dto.UpdateProviderDto;
 import br.com.apimarketplace.dto.ProviderResponseDto;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.service.ProviderService;
@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +36,7 @@ public class ProviderController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('PROVIDER')")
-    @Operation(summary = "Create a user as provider", description = "A provider creates a user")
+    @Operation(summary = "Update a user as provider", description = "A provider update")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Provider successfully created",
                     content = @Content(mediaType = "application/json",
@@ -47,10 +49,10 @@ public class ProviderController {
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
     })
     @PostMapping
-    public ResponseEntity<Provider> createProvider(@RequestBody CreateProviderDto createProviderDto) {
-        var providerId = providerService.createProvider(createProviderDto);
+    public ResponseEntity<Provider> updateProvider(@RequestBody @Valid UpdateProviderDto updateProviderDto) {
+        var providerId = providerService.updateProvider(updateProviderDto);
         return ResponseEntity.created(URI.create("/provedores/" + providerId.toString())).build();
-    }/*VERIFICAR*/
+    }
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('PROVIDER')")

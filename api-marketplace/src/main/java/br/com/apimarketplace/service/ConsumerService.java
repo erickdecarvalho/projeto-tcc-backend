@@ -1,8 +1,7 @@
 package br.com.apimarketplace.service;
 
 import br.com.apimarketplace.dto.ConsumerResponseDto;
-import br.com.apimarketplace.dto.CreateConsumerDto;
-import br.com.apimarketplace.dto.ProviderResponseDto;
+import br.com.apimarketplace.dto.UpdateConsumerDto;
 import br.com.apimarketplace.enums.UserRole;
 import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.repository.ConsumerRepository;
@@ -18,24 +17,29 @@ import java.util.stream.Collectors;
 @Service
 public class ConsumerService {
 
-    private ConsumerRepository consumerRepository;
+    private final ConsumerRepository consumerRepository;
 
     public ConsumerService(ConsumerRepository consumerRepository) {
         this.consumerRepository = consumerRepository;
     }
 
     @Transactional
-    public UUID createConsumer(CreateConsumerDto createConsumerDto) {
+    public UUID updateConsumer(UpdateConsumerDto updateConsumerDto) {
+        Optional<Consumer> consumerOptional = consumerRepository.findById(updateConsumerDto.consumerId());
+        if (consumerOptional.isEmpty()){
+            throw new RuntimeException("Consumer not found by id "+ updateConsumerDto.consumerId());
+        }
 
-        var consumer = new Consumer(UUID.randomUUID(),
-                createConsumerDto.username(),
-                new BCryptPasswordEncoder().encode(createConsumerDto.password()),
-                createConsumerDto.email(),
-                UserRole.CONSUMER
-        );
+        Consumer consumer = consumerOptional.get();
 
-        var savedProvider = consumerRepository.save(consumer);
-        return savedProvider.getId();
+        if (!consumer.getUsername().equals(updateConsumerDto.username())){
+            consumer.setUsername(updateConsumerDto.username());
+        }
+        if (!consumer.getEmail().equals(updateConsumerDto.email())) {
+            consumer.setEmail(updateConsumerDto.email());
+        }
+
+        return consumerRepository.save(consumer).getId();
     }
 
     public Optional<ConsumerResponseDto> getConsumerById(String providerId) {
@@ -51,4 +55,6 @@ public class ConsumerService {
                         provider.getPassword(), provider.getEmail()))
                 .collect(Collectors.toList());
     }
+
+
 }
