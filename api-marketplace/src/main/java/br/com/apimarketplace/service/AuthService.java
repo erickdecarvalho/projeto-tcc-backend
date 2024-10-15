@@ -9,6 +9,7 @@ import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.repository.ConsumerRepository;
 import br.com.apimarketplace.repository.ProviderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,16 +19,12 @@ import java.util.Optional;
 @Service
 public class AuthService {
 
-    private final ConsumerRepository consumerRepository;
+    @Autowired
+    private  ConsumerRepository consumerRepository;
 
-    private final ProviderRepository providerRepository;
+    @Autowired
+    private  ProviderRepository providerRepository;
 
-    private BCryptPasswordEncoder passwordEncoder;
-
-    public AuthService(ConsumerRepository consumerRepository, ProviderRepository providerRepository) {
-        this.consumerRepository = consumerRepository;
-        this.providerRepository = providerRepository;
-    }
 
     public ConsumerDto signupConsumer(SignupConsumerRequestDto signupConsumerRequestDto) {
         Optional<Consumer> optionalConsumer= consumerRepository.findByEmail(signupConsumerRequestDto.email());
@@ -38,7 +35,7 @@ public class AuthService {
 
         Consumer consumer = new Consumer();
         consumer.setUsername(signupConsumerRequestDto.username());
-        consumer.setPassword(passwordEncoder.encode(signupConsumerRequestDto.password()));
+        consumer.setPassword(new BCryptPasswordEncoder().encode(signupConsumerRequestDto.password()));
         consumer.setEmail(signupConsumerRequestDto.email());
         consumer.setRole(UserRole.CONSUMER);
 

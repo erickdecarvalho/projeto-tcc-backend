@@ -2,30 +2,43 @@ package br.com.apimarketplace.controller;
 
 import br.com.apimarketplace.dto.ConsumerResponseDto;
 import br.com.apimarketplace.dto.UpdateConsumerDto;
+import br.com.apimarketplace.dto.UpdatePasswordInsiderDto;
 import br.com.apimarketplace.model.Consumer;
+import br.com.apimarketplace.repository.ConsumerRepository;
 import br.com.apimarketplace.service.ConsumerService;
+import br.com.apimarketplace.service.UpdatePasswordInsiderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/consumidores")
 public class ConsumerController {
 
+    @Autowired
     private ConsumerService consumerService;
 
-    public ConsumerController(ConsumerService consumerService) {
-        this.consumerService = consumerService;
-    }
+    @Autowired
+    private UpdatePasswordInsiderService updatePasswordInsiderService;
+
+    @Autowired
+    private ConsumerRepository consumerRepository;
+
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('CONSUMER')")
@@ -91,5 +104,31 @@ public class ConsumerController {
         var consumers = consumerService.listAllConsumers();
 
         return ResponseEntity.ok(consumers);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @Operation(summary = "Update a user password", description = "A consumer updates password after login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Consumer password successfully updated",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"Consumer password updated successfully\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
+    @PutMapping("/reset")
+    public ResponseEntity<?> updateInsidePassword(@RequestBody @Valid UpdatePasswordInsiderDto updatePasswordInsiderDto) {
+        try{
+            updatePasswordInsiderService.updatePasswordInsider(updatePasswordInsiderDto);
+            return ResponseEntity.ok("Senha atualizada com sucesso");
+        }catch (IllegalArgumentException e ){
+           return ResponseEntity.badRequest().body(e.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar a senha");
+        }
     }
 }

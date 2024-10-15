@@ -14,7 +14,7 @@ public record SignupConsumerRequestDto(
         @NotBlank
         @ValidPassword
         String password,
-        @NotBlank
         @Email
+        @NotBlank
         String email) {
 }

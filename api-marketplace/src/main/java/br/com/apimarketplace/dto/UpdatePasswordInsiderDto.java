@@ -1,19 +1,19 @@
 package br.com.apimarketplace.dto;
 
 import br.com.apimarketplace.validator.ValidPassword;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.UUID;
 
-
-public record SignupProviderRequestDto(
+public record UpdatePasswordInsiderDto(
+        UUID userId,
         @NotBlank
-        String username,
+        String oldPassword,
         @NotBlank
         @ValidPassword
-        String password,
-        @Email
+        String newestPassword,
         @NotBlank
-        String email,
-        String organizationName) {
+        @ValidPassword
+        String newestPasswordConfirm
+) {
 }
