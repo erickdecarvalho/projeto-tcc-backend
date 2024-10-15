@@ -1,11 +1,11 @@
 package br.com.apimarketplace.controller;
 
-import br.com.apimarketplace.dto.ApiDto;
-import br.com.apimarketplace.dto.CreateApiDto;
-import br.com.apimarketplace.dto.UpdateProviderDto;
-import br.com.apimarketplace.dto.ProviderResponseDto;
+import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.model.Provider;
+import br.com.apimarketplace.repository.ConsumerRepository;
+import br.com.apimarketplace.repository.ProviderRepository;
 import br.com.apimarketplace.service.ProviderService;
+import br.com.apimarketplace.service.UpdatePasswordInsiderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,11 +29,16 @@ import java.util.UUID;
 @RequestMapping("/provedores")
 public class ProviderController {
 
+    @Autowired
     private ProviderService providerService;
 
-    public ProviderController(ProviderService providerService) {
-        this.providerService = providerService;
-    }
+    @Autowired
+    private UpdatePasswordInsiderService updatePasswordInsiderService;
+
+    @Autowired
+    private ProviderRepository providerRepository;
+
+
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('PROVIDER')")
@@ -160,6 +166,32 @@ public class ProviderController {
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('PROVIDER')")
+    @Operation(summary = "Update a user password", description = "A provider updates password after login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Provider password successfully updated",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"Consumer password updated successfully\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid input\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
+    @PutMapping("/reset")
+    public ResponseEntity<?> updateInsidePassword(@RequestBody @Valid UpdatePasswordInsiderDto updatePasswordInsiderDto) {
+        try{
+            updatePasswordInsiderService.updatePasswordInsider(updatePasswordInsiderDto);
+            return ResponseEntity.ok("Senha atualizada com sucesso");
+        }catch (IllegalArgumentException e ){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar a senha");
         }
     }
 }
