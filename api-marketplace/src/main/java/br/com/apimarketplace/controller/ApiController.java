@@ -1,10 +1,8 @@
 package br.com.apimarketplace.controller;
 
-import br.com.apimarketplace.dto.ApiResponseDto;
-import br.com.apimarketplace.dto.CreateApiCategory;
-import br.com.apimarketplace.dto.CreateApiDto;
-import br.com.apimarketplace.dto.UpdateApiDto;
+import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.model.Api;
+import br.com.apimarketplace.model.Endpoint;
 import br.com.apimarketplace.service.ApiCategoryService;
 import br.com.apimarketplace.service.ApiService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,12 +13,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/apis")
@@ -164,5 +164,35 @@ public class ApiController {
     public ResponseEntity<Api> createApiCategory(@RequestBody CreateApiCategory createApiCategory) {
         var apiCategoryId = apiCategoryService.createCategory(createApiCategory);
         return ResponseEntity.created(URI.create("/apis/categorias" + apiCategoryId.toString())).build();
+    }
+
+    // Criação de endpoint com o ID da API na URL
+    @PostMapping("/endpoint/{apiId}")
+    public ResponseEntity<Endpoint> createEndpoint(
+            @PathVariable UUID apiId,  // O ID da API é passado como parâmetro
+            @RequestBody EndpointDto endpointDto) {
+        Endpoint endpoint = apiService.createEndpoint(apiId, endpointDto);
+        return ResponseEntity.ok(endpoint);
+    }
+
+    // Endpoint para listar todos os endpoints de uma API
+    @GetMapping("/endpoints/{apiId}")
+    public ResponseEntity<List<EndpointDto>> getEndpointsByApi(@PathVariable UUID apiId) {
+        List<EndpointDto> endpoints = apiService.getEndpointsByApi(apiId);
+        return ResponseEntity.ok(endpoints);
+    }
+
+    @PostMapping("/endpoint/{endpointId}/parameter")
+    public ResponseEntity<Void> addParamToEndpoint(
+            @PathVariable UUID endpointId,
+            @RequestBody ParameterDto parameterDto) {
+        apiService.addParamToEndpoint(endpointId, parameterDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("endpoint/{endpointId}/parameter")
+    public ResponseEntity<List<ParameterDto>> getParametersByEndpoint(@PathVariable UUID endpointId) {
+        List<ParameterDto> params = apiService.getParametersByEndpoint(endpointId);
+        return ResponseEntity.ok(params);
     }
 }
