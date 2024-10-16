@@ -65,6 +65,8 @@ public class ProviderService {
             api.setApiCategory(apiCategoryRepository.getReferenceById(createApiDto.categoryId()));
             api.setName(createApiDto.name());
             api.setDescription(createApiDto.description());
+            api.setBase_url(createApiDto.base_url());
+            api.setConverted_url("www.meusite.com");
             api.setProvider(optionalProvider.get());
 
             apiRepository.save(api);
