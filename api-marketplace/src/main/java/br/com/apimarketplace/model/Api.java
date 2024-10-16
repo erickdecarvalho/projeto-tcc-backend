@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,20 +36,31 @@ public class Api {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "base_url")
+    private String base_url;
+
+    @Column(name = "converted_url")
+    private String converted_url;
+
     @ManyToOne
     @JoinColumn(name = "provider_id")
     private Provider provider;
 
-    private List<String> endpoints;
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private List<Endpoint> endpoints;
 
-    public Api(UUID id, ApiCategory apiCategory, String name, String description, Double price, Provider provider) {
+    public Api(UUID id, ApiCategory apiCategory, String name, String description, Double price, String base_url, String converted_url, Provider provider) {
         this.id = id;
         this.apiCategory = apiCategory;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.base_url = base_url;
+        this.converted_url = converted_url;
         this.provider = provider;
+        this.endpoints = new ArrayList<>();
     }
+
 
     public ApiDto getApiDto() {
         ApiDto apiDto = new ApiDto();
