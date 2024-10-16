@@ -9,34 +9,45 @@ import br.com.apimarketplace.model.Consumer;
 import br.com.apimarketplace.model.Provider;
 import br.com.apimarketplace.repository.ConsumerRepository;
 import br.com.apimarketplace.repository.ProviderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
 
-    private ConsumerRepository consumerRepository;
+    @Autowired
+    private  ConsumerRepository consumerRepository;
 
-    private ProviderRepository providerRepository;
+    @Autowired
+    private  ProviderRepository providerRepository;
 
-    public AuthService(ConsumerRepository consumerRepository, ProviderRepository providerRepository) {
-        this.consumerRepository = consumerRepository;
-        this.providerRepository = providerRepository;
-    }
 
     public ConsumerDto signupConsumer(SignupConsumerRequestDto signupConsumerRequestDto) {
-        Consumer consumer = new Consumer();
+        Optional<Consumer> optionalConsumer= consumerRepository.findByEmail(signupConsumerRequestDto.email());
+        if (optionalConsumer.isPresent()){
+            throw new RuntimeException("E-mail já cadastrado"); /*CRIAR CLASSE EXCEPTIONS*/
+        }
 
+
+        Consumer consumer = new Consumer();
         consumer.setUsername(signupConsumerRequestDto.username());
         consumer.setPassword(new BCryptPasswordEncoder().encode(signupConsumerRequestDto.password()));
         consumer.setEmail(signupConsumerRequestDto.email());
-
         consumer.setRole(UserRole.CONSUMER);
 
         return consumerRepository.save(consumer).getDto();
     }
 
     public ProviderDto signupProvider(SignupProviderRequestDto signupProviderRequestDto) {
+        Optional<Provider> providerOptional = providerRepository.findByEmail(signupProviderRequestDto.email());
+        if (providerOptional.isPresent()){
+            throw new RuntimeException("E-mail já cadastrado");
+        }
+
         Provider provider = new Provider();
 
         provider.setUsername(signupProviderRequestDto.username());
