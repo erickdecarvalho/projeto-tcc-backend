@@ -38,6 +38,6 @@ public class Endpoint {
     @JoinColumn(name = "api_id")
     private Api api;
 
-    @OneToMany(mappedBy = "endpoint", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "endpoint", cascade = CascadeType.ALL)
     private List<Parameter> parameters;
 }

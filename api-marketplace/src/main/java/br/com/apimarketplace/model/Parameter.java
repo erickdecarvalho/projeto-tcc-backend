@@ -36,4 +36,11 @@ public class Parameter {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "endpoint_id", nullable = false)
     private Endpoint endpoint;
+
+    public Parameter(String name, ParameterType type, boolean isOptional, String description) {
+        this.name = name;
+        this.type = type;
+        this.isOptional = isOptional;
+        this.description = description;
+    }
 }

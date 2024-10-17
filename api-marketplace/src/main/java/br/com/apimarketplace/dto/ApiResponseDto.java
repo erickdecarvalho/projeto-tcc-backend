@@ -52,6 +52,7 @@ public record ApiResponseDto(
     private static List<ParameterDto> convertToParamsDtoList(List<Parameter> params) {
         return params.stream()
                 .map(param -> new ParameterDto(
+                        param.getId(),
                         param.getName(),
                         param.getType(),
                         param.isOptional(),

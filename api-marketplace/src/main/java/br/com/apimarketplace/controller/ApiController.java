@@ -91,9 +91,28 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("endpoint/{endpointId}/parameter")
+    @GetMapping("/endpoint/{endpointId}/parameter")
     public ResponseEntity<List<ParameterDto>> getParametersByEndpoint(@PathVariable UUID endpointId) {
         List<ParameterDto> params = apiService.getParametersByEndpoint(endpointId);
         return ResponseEntity.ok(params);
+    }
+
+    @PutMapping("/endpoint/{endpointId}")
+    public ResponseEntity<Void> updateEndpoint(@PathVariable("endpointId") UUID id, @RequestBody EndpointDto endpointDto) {
+        apiService.updateEndpointById(id, endpointDto);
+        System.out.println(endpointDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/endpoint/{endpointId}")
+    public ResponseEntity<Void> deleteEndpoint(@PathVariable("endpointId") UUID id) {
+        apiService.deleteEndpointById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/endpoint/parameter/{parameterId}")
+    public ResponseEntity<Void> deleteParameterById(@PathVariable("parameterId") UUID id) {
+        apiService.deleteParameterById(id);
+        return ResponseEntity.noContent().build();
     }
 }

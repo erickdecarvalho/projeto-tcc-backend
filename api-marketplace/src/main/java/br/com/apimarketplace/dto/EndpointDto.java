@@ -19,10 +19,22 @@ public record EndpointDto(
     public static List<ParameterDto> convertToParamsDtoList(List<Parameter> params) {
         return params.stream()
                 .map(param -> new ParameterDto(
+                        param.getId(),
                         param.getName(),
                         param.getType(),
                         param.isOptional(),
                         param.getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    // Método de conversão de ParameterDto para Parameter
+    public static List<Parameter> convertToParamsEntityList(List<ParameterDto> paramDtos) {
+        return paramDtos.stream()
+                .map(paramDto -> new Parameter(
+                        paramDto.name(),
+                        paramDto.type(),
+                        paramDto.optional(),
+                        paramDto.description()))
                 .collect(Collectors.toList());
     }
 }
