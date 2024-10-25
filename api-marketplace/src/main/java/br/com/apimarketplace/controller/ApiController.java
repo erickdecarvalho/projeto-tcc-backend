@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import br.com.apimarketplace.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -29,10 +31,12 @@ public class ApiController {
 
     private ApiService apiService;
     private ApiCategoryService apiCategoryService;
+    private JwtUtil jwtUtil;
 
-    public ApiController(ApiService apiService, ApiCategoryService apiCategoryService) {
+    public ApiController(ApiService apiService, ApiCategoryService apiCategoryService, JwtUtil jwtUtil) {
         this.apiService = apiService;
         this.apiCategoryService = apiCategoryService;
+        this.jwtUtil = jwtUtil;
     }
 
     @SecurityRequirement(name = "bearerAuth")
@@ -194,5 +198,47 @@ public class ApiController {
     public ResponseEntity<List<ParameterDto>> getParametersByEndpoint(@PathVariable UUID endpointId) {
         List<ParameterDto> params = apiService.getParametersByEndpoint(endpointId);
         return ResponseEntity.ok(params);
+    }
+
+    @PutMapping("/endpoint/{endpointId}")
+    public ResponseEntity<Void> updateEndpoint(@PathVariable("endpointId") UUID id, @RequestBody EndpointDto endpointDto) {
+        apiService.updateEndpointById(id, endpointDto);
+        System.out.println(endpointDto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/endpoint/{endpointId}")
+    public ResponseEntity<Void> deleteEndpoint(@PathVariable("endpointId") UUID id) {
+        apiService.deleteEndpointById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/endpoint/parameter/{parameterId}")
+    public ResponseEntity<Void> deleteParameterById(@PathVariable("parameterId") UUID id) {
+        apiService.deleteParameterById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/access")
+    public ResponseEntity<?> accessApi(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("apiId") String apiId,
+            @RequestParam("endpoint") String endpoint,
+            @RequestParam(required = false) Map<String, String> queryParams) {
+
+        // Extrair o token JWT
+        String jwt = token.substring(7);  // Remove "Bearer " do token
+
+        // Remover os queryParams indesejados (apiId e endpoint)
+        queryParams.remove("apiId");
+        queryParams.remove("endpoint");
+
+        try {
+            // Chama o serviço para redirecionar a chamada à API real com o endpoint correto
+            String response = apiService.makeRequestToProviderApi(apiId, jwt, endpoint, queryParams);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao acessar a API");
+        }
     }
 }

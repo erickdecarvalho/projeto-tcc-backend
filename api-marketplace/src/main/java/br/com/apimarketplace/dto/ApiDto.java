@@ -15,5 +15,6 @@ public class ApiDto {
     private String name;
     private String description;
     private UUID providerId;
+    private String requiredPlan;
     private List<Endpoint> endpoints;
 }

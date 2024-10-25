@@ -45,6 +45,11 @@ public class JwtUtil {
                 .orElse("");
         claims.put("role",role);
         return createToken(claims, userDetails.getUsername());
+		
+    public String generateToken(String username, String userPlan) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("plan", userPlan);  // Adiciona o plano do usuário como uma claim
+        return createToken(claims, username);
     }
 
     private Claims extractAllClaims(String token) {

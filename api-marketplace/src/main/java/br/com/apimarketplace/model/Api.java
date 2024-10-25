@@ -42,6 +42,9 @@ public class Api {
     @Column(name = "converted_url")
     private String converted_url;
 
+    @Column(name = "required_plan")
+    private String required_plan;
+
     @ManyToOne
     @JoinColumn(name = "provider_id")
     private Provider provider;
@@ -49,7 +52,7 @@ public class Api {
     @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
     private List<Endpoint> endpoints;
 
-    public Api(UUID id, ApiCategory apiCategory, String name, String description, Double price, String base_url, String converted_url, Provider provider) {
+    public Api(UUID id, ApiCategory apiCategory, String name, String description, Double price, String base_url, String converted_url, String required_plan, Provider provider) {
         this.id = id;
         this.apiCategory = apiCategory;
         this.name = name;
@@ -57,6 +60,7 @@ public class Api {
         this.price = price;
         this.base_url = base_url;
         this.converted_url = converted_url;
+        this.required_plan = required_plan;
         this.provider = provider;
         this.endpoints = new ArrayList<>();
     }
@@ -68,6 +72,7 @@ public class Api {
         apiDto.setCategoryId(apiCategory.getId());
         apiDto.setName(name);
         apiDto.setDescription(description);
+        apiDto.setRequiredPlan(required_plan);
         apiDto.setProviderId(provider.getId());
 
         return apiDto;
