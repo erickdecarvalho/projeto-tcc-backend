@@ -33,6 +33,12 @@ public class WebSecurityConfig {
                 .and()
                 .headers()
                 .and()
+                .requestMatchers("/authenticate", "/consumidores/registrar").permitAll()
+                .requestMatchers("/authenticate", "/provedores/registrar", "/provedores/**", "/apis").permitAll()
+                .requestMatchers("/apis/endpoint/**", "/apis/endpoints/**").permitAll()  // Permite acesso a rota de endpoints sem autenticação
+                .and()
+                .authorizeHttpRequests().requestMatchers("/api/**", "/apis/**")
+                .authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
