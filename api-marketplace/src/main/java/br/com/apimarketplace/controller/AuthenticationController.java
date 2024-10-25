@@ -11,9 +11,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.mail.MessagingException;
+import jakarta.websocket.server.PathParam;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -138,4 +138,42 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Send Reset email", description = "Reset password by email send ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Email successfully send",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"userEmail\": \"jonh@email.com\"}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid email or password\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
+    @PostMapping("/sendotp")
+    public ResponseEntity<?> sendResetEmail(@RequestBody EmailSenderDto emailSenderDto) throws MessagingException {
+        authService.sendPasswordResetEmail(emailSenderDto.userEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Receive Reset password", description = "Receive Reset password by email and token ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Email successfully send",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"oldPassword\": \"oldPassword\",\"newestPassword\": \"newestPassword\", \"newestPasswordConfirm\": \"newestPasswordConfirm\" }"))),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Invalid email or password\"}"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred\"}")))
+    })
+    @PostMapping("/receiveotp/{email}/{token}")
+    public ResponseEntity<?> receiveResetEmail(@PathVariable("email") String emailSenderDto,@PathVariable("token") String token, @RequestBody UpdatePasswordOutsiderDto updatePasswordOutsiderDto) {
+        authService.resetPassword(emailSenderDto,token,updatePasswordOutsiderDto);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

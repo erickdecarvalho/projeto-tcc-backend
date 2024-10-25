@@ -2,10 +2,9 @@ package br.com.apimarketplace.controller;
 
 import br.com.apimarketplace.dto.*;
 import br.com.apimarketplace.model.Provider;
-import br.com.apimarketplace.repository.ConsumerRepository;
 import br.com.apimarketplace.repository.ProviderRepository;
 import br.com.apimarketplace.service.ProviderService;
-import br.com.apimarketplace.service.UpdatePasswordInsiderService;
+import br.com.apimarketplace.service.UpdatePasswordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +31,7 @@ public class ProviderController {
     private ProviderService providerService;
 
     @Autowired
-    private UpdatePasswordInsiderService updatePasswordInsiderService;
+    private UpdatePasswordService updatePasswordService;
 
     @Autowired
     private ProviderRepository providerRepository;
@@ -186,7 +184,7 @@ public class ProviderController {
     @PutMapping("/reset")
     public ResponseEntity<?> updateInsidePassword(@RequestBody @Valid UpdatePasswordInsiderDto updatePasswordInsiderDto) {
         try{
-            updatePasswordInsiderService.updatePasswordInsider(updatePasswordInsiderDto);
+            updatePasswordService.updatePasswordInsider(updatePasswordInsiderDto);
             return ResponseEntity.ok("Senha atualizada com sucesso");
         }catch (IllegalArgumentException e ){
             return ResponseEntity.badRequest().body(e.getMessage());
