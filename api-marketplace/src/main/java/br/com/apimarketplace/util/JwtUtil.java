@@ -43,8 +43,9 @@ public class JwtUtil {
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElse("");
-        claims.put("role",role);
+        claims.put("role", role);
         return createToken(claims, userDetails.getUsername());
+    }
 		
     public String generateToken(String username, String userPlan) {
         Map<String, Object> claims = new HashMap<>();

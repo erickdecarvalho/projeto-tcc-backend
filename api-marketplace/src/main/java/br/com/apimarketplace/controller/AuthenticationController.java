@@ -127,7 +127,7 @@ public class AuthenticationController {
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.email());
 
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final String jwtUser = jwtUtil.generateToken(userDetails);
 
         final String jwt = jwtUtil.generateToken(userDetails.getUsername(), "Premium");
 
