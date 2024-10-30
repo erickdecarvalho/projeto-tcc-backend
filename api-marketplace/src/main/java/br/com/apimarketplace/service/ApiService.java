@@ -7,6 +7,7 @@ import br.com.apimarketplace.model.Parameter;
 import br.com.apimarketplace.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.TrustStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -70,19 +72,21 @@ import java.security.cert.X509Certificate;
 @Service
 public class ApiService {
 
+    @Autowired
     private ApiRepository apiRepository;
+
+    @Autowired
     private ApiCategoryRepository apiCategoryRepository;
+
+    @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
     private EndpointRepository endpointRepository;
+
+    @Autowired
     private ParameterRepository parameterRepository;
 
-    public ApiService(ApiRepository apiRepository, ApiCategoryRepository apiCategoryRepository, ProviderRepository providerRepository, EndpointRepository endpointRepository, ParameterRepository parameterRepository) {
-        this.apiRepository = apiRepository;
-        this.apiCategoryRepository = apiCategoryRepository;
-        this.providerRepository = providerRepository;
-        this.endpointRepository = endpointRepository;
-        this.parameterRepository = parameterRepository;
-    }
 
     public UUID createApi(CreateApiDto createApiDto) {
         var apiCategory = apiCategoryRepository.getReferenceById(createApiDto.categoryId());
@@ -226,9 +230,10 @@ public class ApiService {
                         param.getDescription()))
                 .collect(Collectors.toList());
     }
-}
+
 
     public void deleteParameterById(UUID parameterId) {
+
         var parameterExists = parameterRepository.existsById(parameterId);
 
         if (parameterExists) {

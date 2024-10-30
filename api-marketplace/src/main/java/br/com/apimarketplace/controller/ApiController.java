@@ -200,12 +200,12 @@ public class ApiController {
         return ResponseEntity.ok(params);
     }
 
-    @PutMapping("/endpoint/{endpointId}")
+/*    @PutMapping("/endpoint/{endpointId}")
     public ResponseEntity<Void> updateEndpoint(@PathVariable("endpointId") UUID id, @RequestBody EndpointDto endpointDto) {
         apiService.updateEndpointById(id, endpointDto);
         System.out.println(endpointDto);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 
     @DeleteMapping("/endpoint/{endpointId}")
     public ResponseEntity<Void> deleteEndpoint(@PathVariable("endpointId") UUID id) {
